@@ -368,6 +368,10 @@ class NumPyPrinter(PythonCodePrinter):
         # version of the function and add 'logical_or' to NUMPY_TRANSLATIONS.
         return '{0}.reduce(({1}))'.format(self._module_format('numpy.logical_or'), ','.join(self._print(i) for i in expr.args))
 
+    def _print_Xor(self, expr):
+        "Logical Xor printer"
+        return '{0}.reduce(({1}))'.format(self._module_format('numpy.logical_xor'), ','.join(self._print(i) for i in expr.args))
+
     def _print_Not(self, expr):
         "Logical Not printer"
         # We have to override LambdaPrinter because it uses Python 'not' keyword.
@@ -376,10 +380,16 @@ class NumPyPrinter(PythonCodePrinter):
         return '{0}({1})'.format(self._module_format('numpy.logical_not'), ','.join(self._print(i) for i in expr.args))
 
     def _print_Min(self, expr):
-        return '{0}(({1}))'.format(self._module_format('numpy.amin'), ','.join(self._print(i) for i in expr.args))
+        print_expr = '{0}'.format(self._print(expr.args[0]))
+        for i in range(1,len(expr.args)) :
+            print_expr = '{0}({1},{2})'.format(self._module_format('numpy.minimum'),self._print(expr.args[i]),print_expr)
+        return print_expr
 
     def _print_Max(self, expr):
-        return '{0}(({1}))'.format(self._module_format('numpy.amax'), ','.join(self._print(i) for i in expr.args))
+        print_expr = '{0}'.format(self._print(expr.args[0]))
+        for i in range(1,len(expr.args)) :
+            print_expr = '{0}({1},{2})'.format(self._module_format('numpy.maximum'),self._print(expr.args[i]),print_expr)
+        return print_expr
 
     def _print_Pow(self, expr):
         if expr.exp == 0.5:
